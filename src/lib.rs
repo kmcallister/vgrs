@@ -2,11 +2,45 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+//! This library lets Rust programs running inside Valgrind make
+//! various requests of Valgrind and its tools.  For now this only
+//! works on Linux or MacOS, and only on AMD64, but support for
+//! other platforms should be easy.
+//!
+//! This crate is sparsely documented.  You will probably want
+//! to look at the [Valgrind user manual][] and the C headers in
+//! `/usr/include/valgrind` to learn what these requests do.
+//!
+//! Some client requests are not implemented, and some of those
+//! that are implemented are untested.  These requests are from
+//! Valgrind 3.8; some of them may not exist on older versions.
+//!
+//! Interpreting the ability to trust Valgrind results as an
+//! extension of Rust's memory safety guarantee, all of these
+//! functions are marked `unsafe`.  Even so, some of them are
+//! clearly safe, but are still marked `unsafe` for consistency.
+//!
+//! When not running under Valgrind, these requests do nothing
+//! and return a default value (usually zero).
+//!
+//! These are `#[inline(always)]` to match the C versions, which
+//! are macros.
+//!
+//! [Valgrind user manual]: http://valgrind.org/docs/manual/index.html
+
 #![crate_id="github.com/kmcallister/vgrs"]
 #![crate_type="lib"]
 #![feature(macro_rules, asm, globs)]
 
 use std::libc::c_uint;
+
+// Client requests use a magic instruction sequence which differs
+// by operating system and CPU architecture.  The `arch` modules
+// define a single function `request`, and the rest of the code
+// here is platform independent.
+//
+// The magic instructions as well as the values in `enums` are
+// considered a stable ABI, according to `valgrind.h`.
 
 #[cfg(target_arch = "x86_64", target_os = "linux")]
 #[cfg(target_arch = "x86_64", target_os = "macos")]
@@ -15,6 +49,8 @@ mod arch;
 
 mod enums;
 
+// We can interpret the result of a client request as any of
+// these Rust types.
 #[doc(hidden)]
 priv trait FromUint {
     fn from_uint(x: uint) -> Self;
@@ -45,6 +81,8 @@ impl<T: FromUint> FromUint for Option<T> {
     }
 }
 
+// Build a wrapper function of a given type.  We enumerate every arity
+// because recursive macros with delimited lists don't work very well.
 macro_rules! wrap (
     ($nr:ident => fn $name:ident ( ) -> $t_ret:ty) => (
         #[inline(always)]
@@ -111,6 +149,8 @@ macro_rules! wrap_str ( ($nr:ident => fn $name:ident ( $a1:ident : &str ) -> ())
     }
 ))
 
+// Wrap a function taking `(addr: *(), len: uint)` with a function that takes
+// `*T` and uses `size_of::<T>()`
 macro_rules! generic ( ($imp:ident => fn $name:ident <T>($a1:ident : *T) -> $t_ret:ty) => (
     #[inline(always)]
     pub unsafe fn $name<T>($a1: *T) -> $t_ret {
@@ -120,6 +160,13 @@ macro_rules! generic ( ($imp:ident => fn $name:ident <T>($a1:ident : *T) -> $t_r
 ))
 
 pub mod valgrind {
+    //! Client requests for the Valgrind core itself.
+    //!
+    //! See `/usr/include/valgrind/valgrind.h` and
+    //! [section 3.1][] of the Valgrind manual.
+    //!
+    //! [section 3.1]: http://valgrind.org/docs/manual/manual-core-adv.html#manual-core-adv.clientreq
+
     wrap!(VG_USERREQ__RUNNING_ON_VALGRIND
         => fn running_on_valgrind() -> uint)
 
@@ -134,6 +181,14 @@ pub mod valgrind {
 }
 
 pub mod memcheck {
+    //! Client requests for the Memcheck memory error
+    //! detector tool.
+    //!
+    //! See `/usr/include/valgrind/memcheck.h` and
+    //! [section 4.7][] of the Valgrind manual.
+    //!
+    //! [section 4.7]: http://valgrind.org/docs/manual/mc-manual.html#mc-manual.clientreqs
+
     wrap!(VG_USERREQ__MALLOCLIKE_BLOCK
         => fn malloclike_block(addr: *(), size: uint, redzone: uint, is_zeroed: bool) -> ())
 
@@ -199,6 +254,8 @@ pub mod memcheck {
     wrap_leak_check!(VG_USERREQ__DO_LEAK_CHECK(1, 0)
         => fn do_quick_leak_check() -> ())
 
+    /// Result of `count_leaks` or `count_leak_blocks`, in
+    /// bytes or blocks respectively.
     pub struct LeakCount {
         leaked: uint,
         dubious: uint,
@@ -234,6 +291,13 @@ pub mod memcheck {
 }
 
 pub mod callgrind {
+    //! Client requests for the Callgrind profiler tool.
+    //!
+    //! See `/usr/include/valgrind/callgrind.h` and
+    //! [section 6.5][] of the Valgrind manual.
+    //!
+    //! [section 6.5]: http://valgrind.org/docs/manual/cl-manual.html#cl-manual.clientrequests
+
     wrap!(VG_USERREQ__DUMP_STATS
         => fn dump_stats() -> ())
 
@@ -254,6 +318,14 @@ pub mod callgrind {
 }
 
 pub mod helgrind {
+    //! Client requests for the Helgrind thread error
+    //! detector tool.
+    //!
+    //! See `/usr/include/valgrind/helgrind.h` and
+    //! [section 7.7][] of the Valgrind manual.
+    //!
+    //! [section 7.7]: http://valgrind.org/docs/manual/hg-manual.html#hg-manual.client-requests
+
     wrap!(VG_USERREQ__HG_CLEAN_MEMORY
         => fn clean_memory(addr: *(), len: uint) -> ())
 
@@ -262,6 +334,14 @@ pub mod helgrind {
 }
 
 pub mod drd {
+    //! Client requests for the DRD thread error
+    //! detector tool.
+    //!
+    //! See `/usr/include/valgrind/drd.h` and
+    //! [section 8.2.5][] of the Valgrind manual.
+    //!
+    //! [section 8.2.5]: http://valgrind.org/docs/manual/drd-manual.html#drd-manual.clientreqs
+
     use std::libc::c_uint;
 
     wrap!(VG_USERREQ__DRD_CLEAN_MEMORY

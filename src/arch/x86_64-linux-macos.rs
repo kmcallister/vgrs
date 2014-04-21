@@ -14,6 +14,10 @@ pub unsafe fn request(
 
     let args: [uint, ..6] = [request, arg1, arg2, arg3, arg4, arg5];
     let mut result: uint;
+
+    // Valgrind notices this magic instruction sequence and interprets
+    // it as a kind of hypercall.  When not running under Valgrind,
+    // the instructions do nothing and `default` is returned.
     asm!("
         rolq $$3,  %rdi
         rolq $$13, %rdi
