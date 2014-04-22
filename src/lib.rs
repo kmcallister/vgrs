@@ -32,7 +32,9 @@
 #![crate_type="lib"]
 #![feature(macro_rules, asm, globs)]
 
-use std::libc::c_uint;
+extern crate libc;
+
+use libc::c_uint;
 
 // Client requests use a magic instruction sequence which differs
 // by operating system and CPU architecture.  The `arch` modules
@@ -52,7 +54,7 @@ mod enums;
 // We can interpret the result of a client request as any of
 // these Rust types.
 #[doc(hidden)]
-priv trait FromUint {
+trait FromUint {
     fn from_uint(x: uint) -> Self;
 }
 
@@ -257,10 +259,10 @@ pub mod memcheck {
     /// Result of `count_leaks` or `count_leak_blocks`, in
     /// bytes or blocks respectively.
     pub struct LeakCount {
-        leaked: uint,
-        dubious: uint,
-        reachable: uint,
-        suppressed: uint,
+        pub leaked: uint,
+        pub dubious: uint,
+        pub reachable: uint,
+        pub suppressed: uint,
     }
 
     macro_rules! wrap_count ( ($nr:ident => fn $name:ident() -> LeakCount) => (
@@ -342,7 +344,7 @@ pub mod drd {
     //!
     //! [section 8.2.5]: http://valgrind.org/docs/manual/drd-manual.html#drd-manual.clientreqs
 
-    use std::libc::c_uint;
+    use libc::c_uint;
 
     wrap!(VG_USERREQ__DRD_CLEAN_MEMORY
         => fn clean_memory(addr: *(), len: uint) -> ())

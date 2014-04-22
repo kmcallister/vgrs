@@ -7,12 +7,12 @@
 
 extern crate vgrs;
 extern crate test;
+extern crate libc;
 
 use vgrs::{valgrind, memcheck};
 
 use std::intrinsics;
-use std::libc;
-use std::libc::c_void;
+use libc::c_void;
 use test::black_box;
 
 unsafe fn assert_error(errors: &mut uint) {
