@@ -12,5 +12,6 @@ use vgrs::valgrind;
 fn main() {
     unsafe {
         assert_eq!(valgrind::running_on_valgrind(), 1);
+        assert_eq!(valgrind::count_errors(), 0);
     }
 }

@@ -18,7 +18,7 @@ all: $(LIB)
 $(LIB): $(LIB_ALL_SRC)
 	$(RUSTC_CMD) $(LIB_TOP_SRC)
 
-TEST_TOOLS = valgrind
+TEST_TOOLS = valgrind memcheck
 
 define DEF_TEST
 vgrs-$(1)-test: $$(VPATH)/test/$(1).rs $$(LIB)
@@ -31,6 +31,7 @@ $(eval $(call DEF_TEST,$(tool))))
 .PHONY: check
 check: $(foreach tool,$(TEST_TOOLS),vgrs-$(tool)-test)
 	$(VALGRIND_CMD) --tool=none ./vgrs-valgrind-test
+	$(VALGRIND_CMD) --tool=memcheck ./vgrs-memcheck-test
 
 .PHONY: clean
 clean:
