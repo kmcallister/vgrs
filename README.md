@@ -1,5 +1,7 @@
 # Valgrind client requests for Rust
 
+[![Build Status](https://travis-ci.org/kmcallister/vgrs.svg?branch=master)](https://travis-ci.org/kmcallister/vgrs)
+
 This library lets Rust programs running inside [Valgrind][] make various
 requests of Valgrind and its tools.  For example:
 
