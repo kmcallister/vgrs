@@ -25,16 +25,8 @@ This library is sparsely documented.  You will probably want to look at the
 [Valgrind user manual][] and the C headers in `/usr/include/valgrind` to learn
 what all these requests do.
 
-## Building it
-
-~~~
-mkdir -p build
-cd build
-../configure
-make
-~~~
-
-This also produces documentation under `build/doc/`.
+`make` will put the library in `build/` and documentation in `build/doc/`.
+`make check` will run some test programs under Valgrind.
 
 [Valgrind]: http://valgrind.org
 [Valgrind user manual]: http://valgrind.org/docs/manual/index.html
