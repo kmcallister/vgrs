@@ -1,6 +1,7 @@
 VPATH := %VPATH%
 
 RUSTC ?= rustc
+RUSTDOC ?= rustdoc
 RUST_DIRS := -L .
 
 VALGRIND ?= valgrind
@@ -13,10 +14,16 @@ LIB_ALL_SRC := $(shell find $(VPATH)/src -type f -name '*.rs')
 LIB         := $(shell $(RUSTC) --crate-file-name "$(LIB_TOP_SRC)")
 
 .PHONY: all
-all: $(LIB)
+all: $(LIB) doc
 
 $(LIB): $(LIB_ALL_SRC)
 	$(RUSTC_CMD) $(LIB_TOP_SRC)
+
+.PHONY: doc
+doc: doc/vgrs/index.html
+
+doc/vgrs/index.html: $(LIB_ALL_SRC)
+	$(RUSTDOC) $(LIB_TOP_SRC)
 
 TEST_TOOLS = valgrind memcheck
 
@@ -36,3 +43,4 @@ check: $(foreach tool,$(TEST_TOOLS),vgrs-$(tool)-test)
 .PHONY: clean
 clean:
 	rm -f *.o *.a *.so *.dylib *.dll *.rlib *-test
+	rm -fr doc
