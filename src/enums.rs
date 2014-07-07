@@ -5,8 +5,8 @@
 #![allow(non_camel_case_types)]
 
 macro_rules! VG_USERREQ_TOOL_BASE ( ($a:expr, $b:expr) => (
-    ((($a as uint) & 0xffu) << 24)
-  | ((($b as uint) & 0xffu) << 16)))
+    ((($a as int) & 0xff) << 24)
+  | ((($b as int) & 0xff) << 16)))
 
 #[repr(C)]
 pub enum Vg_ClientRequest {

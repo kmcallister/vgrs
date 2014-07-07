@@ -28,7 +28,7 @@
 //!
 //! [Valgrind user manual]: http://valgrind.org/docs/manual/index.html
 
-#![crate_id="github.com/kmcallister/vgrs"]
+#![crate_name="vgrs"]
 #![crate_type="lib"]
 #![feature(macro_rules, asm, globs)]
 
@@ -66,8 +66,8 @@ impl FromUint for () {
     fn from_uint(_: uint) -> () { }
 }
 
-impl FromUint for *() {
-    fn from_uint(x: uint) -> *() { x as *() }
+impl FromUint for *const () {
+    fn from_uint(x: uint) -> *const () { x as *const () }
 }
 
 impl FromUint for c_uint {
@@ -151,13 +151,13 @@ macro_rules! wrap_str ( ($nr:ident => fn $name:ident ( $a1:ident : &str ) -> ())
     }
 ))
 
-// Wrap a function taking `(addr: *(), len: uint)` with a function that takes
-// `*T` and uses `size_of::<T>()`
-macro_rules! generic ( ($imp:ident => fn $name:ident <T>($a1:ident : *T) -> $t_ret:ty) => (
+// Wrap a function taking `(addr: *const (), len: uint)` with a function that takes
+// `*const T` and uses `size_of::<T>()`
+macro_rules! generic ( ($imp:ident => fn $name:ident <T>($a1:ident : *const T) -> $t_ret:ty) => (
     #[inline(always)]
-    pub unsafe fn $name<T>($a1: *T) -> $t_ret {
+    pub unsafe fn $name<T>($a1: *const T) -> $t_ret {
         use std::mem::size_of;
-        $imp($a1 as *(), size_of::<T>())
+        $imp($a1 as *const (), size_of::<T>())
     }
 ))
 
@@ -176,7 +176,7 @@ pub mod valgrind {
         => fn count_errors() -> uint)
 
     wrap!(VG_USERREQ__DISCARD_TRANSLATIONS
-        => fn discard_translations(addr: *(), len: uint) -> ())
+        => fn discard_translations(addr: *const (), len: uint) -> ())
 
     wrap_str!(VG_USERREQ__GDB_MONITOR_COMMAND
         => fn monitor_command(cmd: &str) -> ())
@@ -192,49 +192,49 @@ pub mod memcheck {
     //! [section 4.7]: http://valgrind.org/docs/manual/mc-manual.html#mc-manual.clientreqs
 
     wrap!(VG_USERREQ__MALLOCLIKE_BLOCK
-        => fn malloclike_block(addr: *(), size: uint, redzone: uint, is_zeroed: bool) -> ())
+        => fn malloclike_block(addr: *const (), size: uint, redzone: uint, is_zeroed: bool) -> ())
 
     wrap!(VG_USERREQ__RESIZEINPLACE_BLOCK
-        => fn resizeinplace_block(addr: *(), old_size: uint, new_size: uint, redzone: uint) -> ())
+        => fn resizeinplace_block(addr: *const (), old_size: uint, new_size: uint, redzone: uint) -> ())
 
     wrap!(VG_USERREQ__FREELIKE_BLOCK
-        => fn freelike_block(addr: *(), redzone: uint) -> ())
+        => fn freelike_block(addr: *const (), redzone: uint) -> ())
 
     wrap!(VG_USERREQ__MAKE_MEM_NOACCESS
-        => fn make_mem_noaccess(addr: *(), len: uint) -> ())
+        => fn make_mem_noaccess(addr: *const (), len: uint) -> ())
 
     generic!(make_mem_noaccess
-        => fn make_noaccess<T>(obj: *T) -> ())
+        => fn make_noaccess<T>(obj: *const T) -> ())
 
     wrap!(VG_USERREQ__MAKE_MEM_UNDEFINED
-        => fn make_mem_undefined(addr: *(), len: uint) -> ())
+        => fn make_mem_undefined(addr: *const (), len: uint) -> ())
 
     generic!(make_mem_undefined
-        => fn make_undefined<T>(obj: *T) -> ())
+        => fn make_undefined<T>(obj: *const T) -> ())
 
     wrap!(VG_USERREQ__MAKE_MEM_DEFINED
-        => fn make_mem_defined(addr: *(), len: uint) -> ())
+        => fn make_mem_defined(addr: *const (), len: uint) -> ())
 
     generic!(make_mem_defined
-        => fn make_defined<T>(obj: *T) -> ())
+        => fn make_defined<T>(obj: *const T) -> ())
 
     wrap!(VG_USERREQ__MAKE_MEM_DEFINED_IF_ADDRESSABLE
-        => fn make_mem_defined_if_addressable(addr: *(), len: uint) -> ())
+        => fn make_mem_defined_if_addressable(addr: *const (), len: uint) -> ())
 
     generic!(make_mem_defined_if_addressable
-        => fn make_defined_if_addressable<T>(obj: *T) -> ())
+        => fn make_defined_if_addressable<T>(obj: *const T) -> ())
 
     wrap!(VG_USERREQ__CHECK_MEM_IS_ADDRESSABLE
-        => fn check_mem_is_addressable(addr: *(), len: uint) -> Option<*()>)
+        => fn check_mem_is_addressable(addr: *const (), len: uint) -> Option<*const ()>)
 
     generic!(check_mem_is_addressable
-        => fn check_is_addressable<T>(obj: *T) -> Option<*()>)
+        => fn check_is_addressable<T>(obj: *const T) -> Option<*const ()>)
 
     wrap!(VG_USERREQ__CHECK_MEM_IS_DEFINED
-        => fn check_mem_is_defined(addr: *(), len: uint) -> Option<*()>)
+        => fn check_mem_is_defined(addr: *const (), len: uint) -> Option<*const ()>)
 
     generic!(check_mem_is_defined
-        => fn check_is_defined<T>(obj: *T) -> Option<*()>)
+        => fn check_is_defined<T>(obj: *const T) -> Option<*const ()>)
 
     macro_rules! wrap_leak_check ( ($nr:ident($a1:expr, $a2:expr) => fn $name:ident () -> ()) => (
         #[inline(always)]
@@ -329,10 +329,10 @@ pub mod helgrind {
     //! [section 7.7]: http://valgrind.org/docs/manual/hg-manual.html#hg-manual.client-requests
 
     wrap!(VG_USERREQ__HG_CLEAN_MEMORY
-        => fn clean_memory(addr: *(), len: uint) -> ())
+        => fn clean_memory(addr: *const (), len: uint) -> ())
 
     generic!(clean_memory
-        => fn clean<T>(obj: *T) -> ())
+        => fn clean<T>(obj: *const T) -> ())
 }
 
 pub mod drd {
@@ -347,10 +347,10 @@ pub mod drd {
     use libc::c_uint;
 
     wrap!(VG_USERREQ__DRD_CLEAN_MEMORY
-        => fn clean_memory(addr: *(), len: uint) -> ())
+        => fn clean_memory(addr: *const (), len: uint) -> ())
 
     generic!(clean_memory
-        => fn clean<T>(obj: *T) -> ())
+        => fn clean<T>(obj: *const T) -> ())
 
     wrap!(VG_USERREQ__DRD_GET_VALGRIND_THREAD_ID
         => fn get_valgrind_threadid() -> c_uint)
@@ -359,28 +359,28 @@ pub mod drd {
         => fn get_drd_threadid() -> c_uint)
 
     wrap!(VG_USERREQ__DRD_START_SUPPRESSION
-        => fn annotate_benign_race_sized(addr: *(), len: uint) -> ())
+        => fn annotate_benign_race_sized(addr: *const (), len: uint) -> ())
 
     generic!(annotate_benign_race_sized
-        => fn annotate_benign_race<T>(obj: *T) -> ())
+        => fn annotate_benign_race<T>(obj: *const T) -> ())
 
     wrap!(VG_USERREQ__DRD_FINISH_SUPPRESSION
-        => fn stop_ignoring_sized(addr: *(), len: uint) -> ())
+        => fn stop_ignoring_sized(addr: *const (), len: uint) -> ())
 
     generic!(stop_ignoring_sized
-        => fn stop_ignoring<T>(obj: *T) -> ())
+        => fn stop_ignoring<T>(obj: *const T) -> ())
 
     wrap!(VG_USERREQ__DRD_START_TRACE_ADDR
-        => fn trace_sized(addr: *(), len: uint) -> ())
+        => fn trace_sized(addr: *const (), len: uint) -> ())
 
     generic!(trace_sized
-        => fn trace<T>(obj: *T) -> ())
+        => fn trace<T>(obj: *const T) -> ())
 
     wrap!(VG_USERREQ__DRD_STOP_TRACE_ADDR
-        => fn stop_tracing_sized(addr: *(), len: uint) -> ())
+        => fn stop_tracing_sized(addr: *const (), len: uint) -> ())
 
     generic!(stop_tracing_sized
-        => fn stop_tracing<T>(obj: *T) -> ())
+        => fn stop_tracing<T>(obj: *const T) -> ())
 
     macro_rules! wrap_record( ($nr:ident($n:expr) => fn $name:ident() -> ()) => (
         #[inline(always)]

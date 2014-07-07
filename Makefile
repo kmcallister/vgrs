@@ -11,7 +11,7 @@ VALGRIND_CMD := $(VALGRIND) -q --log-file=/dev/null
 
 LIB_TOP_SRC := src/lib.rs
 LIB_ALL_SRC := $(shell find src -type f -name '*.rs')
-LIB         := $(BUILDDIR)/$(shell $(RUSTC) --crate-file-name "$(LIB_TOP_SRC)")
+LIB         := $(BUILDDIR)/$(shell $(RUSTC) --print-file-name "$(LIB_TOP_SRC)")
 
 .PHONY: all
 all: $(LIB) doc
