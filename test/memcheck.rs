@@ -26,7 +26,7 @@ unsafe fn assert_no_error(errors: uint) {
     assert_eq!(e, errors);
 }
 
-unsafe fn test() {
+unsafe fn do_test() {
     assert_eq!(valgrind::running_on_valgrind(), 1);
 
     let mut errors = 0;
@@ -94,5 +94,5 @@ unsafe fn test() {
 }
 
 fn main() {
-    unsafe { test() }
+    unsafe { do_test() }
 }
