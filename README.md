@@ -27,8 +27,7 @@ This library is sparsely documented.  You will probably want to look at the
 [Valgrind user manual][] and the C headers in `/usr/include/valgrind` to learn
 what all these requests do.
 
-`make` will put the library in `build/` and documentation in `build/doc/`.
-`make check` will run some test programs under Valgrind.
+This library builds with [Cargo](http://crates.io/).  You can run the tests with `make check`.
 
 [Valgrind]: http://valgrind.org
 [Valgrind user manual]: http://valgrind.org/docs/manual/index.html

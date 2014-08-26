@@ -1,0 +1,5 @@
+[package]
+
+name = "vgrs"
+version = "0.0.1"
+authors = ["Keegan McAllister <kmcallister@mozilla.com>"]

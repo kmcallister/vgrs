@@ -1,32 +1,26 @@
 BUILDDIR = build
 
+CARGO ?= cargo
 RUSTC ?= rustc
-RUSTDOC ?= rustdoc
-RUST_DIRS := -L $(BUILDDIR)
+RUST_DIRS := -L $(BUILDDIR) -L target -L target/deps
 
 VALGRIND ?= valgrind
 
 RUSTC_CMD := $(RUSTC) --out-dir $(BUILDDIR) $(RUST_DIRS) -O $(RUSTFLAGS)
 VALGRIND_CMD := $(VALGRIND) -q --log-file=/dev/null
 
-LIB_TOP_SRC := src/lib.rs
 LIB_ALL_SRC := $(shell find src -type f -name '*.rs')
-LIB         := $(BUILDDIR)/$(shell $(RUSTC) --print-file-name "$(LIB_TOP_SRC)")
+LIB         := $(BUILDDIR)/libvgrs.dummy
 
 .PHONY: all
-all: $(LIB) doc
+all: $(LIB)
 
 $(BUILDDIR):
 	mkdir -p $@
 
 $(LIB): $(LIB_ALL_SRC) | $(BUILDDIR)
-	$(RUSTC_CMD) $(LIB_TOP_SRC)
-
-.PHONY: doc
-doc: $(BUILDDIR)/doc/vgrs/index.html
-
-$(BUILDDIR)/doc/vgrs/index.html: $(LIB_ALL_SRC) | $(BUILDDIR)
-	$(RUSTDOC) -o $(BUILDDIR)/doc $(LIB_TOP_SRC)
+	$(CARGO) build
+	touch $(LIB)
 
 TEST_TOOLS = valgrind memcheck
 
@@ -45,4 +39,5 @@ check: $(foreach tool,$(TEST_TOOLS),$(BUILDDIR)/vgrs-$(tool)-test)
 
 .PHONY: clean
 clean:
+	$(CARGO) clean
 	rm -fr $(BUILDDIR)
