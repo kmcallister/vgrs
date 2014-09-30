@@ -49,6 +49,11 @@ use libc::c_uint;
 #[path = "arch/x86_64-linux-macos.rs"]
 mod arch;
 
+#[cfg(target_arch = "x86", target_os = "linux")]
+#[cfg(target_arch = "x86", target_os = "macos")]
+#[path = "arch/x86-linux-macos.rs"]
+mod arch;
+
 mod enums;
 
 // We can interpret the result of a client request as any of
