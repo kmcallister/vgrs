@@ -4,8 +4,8 @@
 
 //! This library lets Rust programs running inside Valgrind make
 //! various requests of Valgrind and its tools.  For now this only
-//! works on Linux or MacOS, and only on AMD64, but support for
-//! other platforms should be easy.
+//! works on Linux or MacOS, and only on 32- or 64-bit x86, but
+//! support for other platforms should be easy.
 //!
 //! This crate is sparsely documented.  You will probably want
 //! to look at the [Valgrind user manual][] and the C headers in
