@@ -1,3 +1,6 @@
+env:
+  global:
+    - secure: G6aAyrfyqgMC3gnBJvQfBDQ5bdbjIzLdY8Cv/M+pDVKTCGm5/Ag0pwI45Sln6vwkkHjDuH2cghJr4OoNsQV7CQG5e9LqHFEBheOSA/pvTGhNVJtodHFDRJ4FEZrXlTeUrBekYgt1cSprkDoue31anUKWO/KhaI3AaYxaHpweAA0=
 language: rust
 install:
   - sudo apt-get update
@@ -5,3 +8,6 @@ install:
 script:
   - make check
   - cargo doc
+after_script:
+  - cd target
+  - curl http://www.rust-ci.org/artifacts/put?t=$RUSTCI_TOKEN | sh

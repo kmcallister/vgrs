@@ -23,11 +23,12 @@ fn main() {
 For now this only works on Linux or MacOS, and only on AMD64, but support for
 other platforms should be easy (see `src/arch/`).
 
-This library is sparsely documented.  You will probably want to look at the
-[Valgrind user manual][] and the C headers in `/usr/include/valgrind` to learn
-what all these requests do.
+There is [API documentation online][] although it's rather sparse.  You will
+probably want to look at the [Valgrind user manual][] and the C headers in
+`/usr/include/valgrind` to learn what all these requests do.
 
 This library builds with [Cargo](http://crates.io/).  You can run the tests with `make check`.
 
 [Valgrind]: http://valgrind.org
 [Valgrind user manual]: http://valgrind.org/docs/manual/index.html
+[API documentation online]: http://www.rust-ci.org/kmcallister/vgrs/doc/vgrs/
