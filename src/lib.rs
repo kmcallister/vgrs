@@ -4,7 +4,7 @@
 
 //! This library lets Rust programs running inside Valgrind make
 //! various requests of Valgrind and its tools.  For now this only
-//! works on Linux or MacOS, and only on 32- or 64-bit x86, but
+//! works on Linux, FreeBSD or MacOS, and only on 32- or 64-bit x86, but
 //! support for other platforms should be easy.
 //!
 //! This crate is sparsely documented.  You will probably want
@@ -46,11 +46,13 @@ use libc::c_uint;
 
 #[cfg(target_arch = "x86_64", target_os = "linux")]
 #[cfg(target_arch = "x86_64", target_os = "macos")]
+#[cfg(target_arch = "x86_64", target_os = "freebsd")]
 #[path = "arch/x86_64-linux-macos.rs"]
 mod arch;
 
 #[cfg(target_arch = "x86", target_os = "linux")]
 #[cfg(target_arch = "x86", target_os = "macos")]
+#[cfg(target_arch = "x86", target_os = "freebsd")]
 #[path = "arch/x86-linux-macos.rs"]
 mod arch;
 
