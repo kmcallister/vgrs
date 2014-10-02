@@ -44,15 +44,17 @@ use libc::c_uint;
 // The magic instructions as well as the values in `enums` are
 // considered a stable ABI, according to `valgrind.h`.
 
-#[cfg(target_arch = "x86_64", target_os = "linux")]
-#[cfg(target_arch = "x86_64", target_os = "macos")]
-#[cfg(target_arch = "x86_64", target_os = "freebsd")]
+#[cfg(all(target_arch = "x86_64",
+          any(target_os = "linux",
+              target_os = "macos",
+              target_os = "freebsd")))]
 #[path = "arch/x86_64-linux-macos.rs"]
 mod arch;
 
-#[cfg(target_arch = "x86", target_os = "linux")]
-#[cfg(target_arch = "x86", target_os = "macos")]
-#[cfg(target_arch = "x86", target_os = "freebsd")]
+#[cfg(all(target_arch = "x86",
+          any(target_os = "linux",
+              target_os = "macos",
+              target_os = "freebsd")))]
 #[path = "arch/x86-linux-macos.rs"]
 mod arch;
 
