@@ -4,6 +4,12 @@
 
 #![allow(non_camel_case_types, dead_code)]
 
+pub use self::Vg_ClientRequest::*;
+pub use self::Vg_MemCheckClientRequest::*;
+pub use self::Vg_CallgrindClientRequest::*;
+pub use self::Vg_TCheckClientRequest::*;
+pub use self::Vg_DRDClientRequest::*;
+
 macro_rules! VG_USERREQ_TOOL_BASE ( ($a:expr, $b:expr) => (
     ((($a as int) & 0xff) << 24)
   | ((($b as int) & 0xff) << 16)))
