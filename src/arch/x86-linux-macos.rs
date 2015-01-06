@@ -12,7 +12,7 @@ pub unsafe fn request(
         arg4: uint,
         arg5: uint) -> uint {
 
-    let args: [uint, ..6] = [request, arg1, arg2, arg3, arg4, arg5];
+    let args: [uint; 6] = [request, arg1, arg2, arg3, arg4, arg5];
     let mut result: uint;
 
     // Valgrind notices this magic instruction sequence and interprets
