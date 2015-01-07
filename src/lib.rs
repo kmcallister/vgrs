@@ -30,7 +30,7 @@
 
 #![crate_name="vgrs"]
 #![crate_type="lib"]
-#![feature(macro_rules, asm, globs)]
+#![feature(asm)]
 
 extern crate libc;
 
@@ -153,10 +153,8 @@ macro_rules! wrap (
 macro_rules! wrap_str ( ($nr:ident => fn $name:ident ( $a1:ident : &str ) -> ()) => (
     #[inline(always)]
     pub unsafe fn $name($a1: &str) {
-        $a1.with_c_str(|c_str| {
-            use super::{arch, enums};
-            arch::request(0, enums::$nr as uint, c_str as uint, 0, 0, 0, 0);
-        });
+        let c_str = CString::from_slice($a1.as_bytes());
+        arch::request(0, enums::$nr as uint, c_str.as_slice_with_nul().as_ptr() as uint, 0, 0, 0, 0);
     }
 ));
 
@@ -178,7 +176,8 @@ pub mod valgrind {
     //!
     //! [section 3.1]: http://valgrind.org/docs/manual/manual-core-adv.html#manual-core-adv.clientreq
 
-    use std::c_str::ToCStr;
+    use std::ffi::CString;
+    use super::{arch, enums};
 
     wrap!(VG_USERREQ__RUNNING_ON_VALGRIND
         => fn running_on_valgrind() -> uint);
@@ -311,7 +310,8 @@ pub mod callgrind {
     //!
     //! [section 6.5]: http://valgrind.org/docs/manual/cl-manual.html#cl-manual.clientrequests
 
-    use std::c_str::ToCStr;
+    use std::ffi::CString;
+    use super::{arch, enums};
 
     wrap!(VG_USERREQ__DUMP_STATS
         => fn dump_stats() -> ());
@@ -358,7 +358,8 @@ pub mod drd {
     //! [section 8.2.5]: http://valgrind.org/docs/manual/drd-manual.html#drd-manual.clientreqs
 
     use libc::c_uint;
-    use std::c_str::ToCStr;
+    use std::ffi::CString;
+    use super::{arch, enums};
 
     wrap!(VG_USERREQ__DRD_CLEAN_MEMORY
         => fn clean_memory(addr: *const (), len: uint) -> ());
