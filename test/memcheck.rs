@@ -4,6 +4,8 @@
 
 #![crate_name="vgrs-memcheck-test"]
 #![crate_type="bin"]
+#![deny(warnings)]
+#![allow(unstable)]
 
 extern crate vgrs;
 extern crate test;

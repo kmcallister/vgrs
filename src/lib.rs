@@ -31,6 +31,8 @@
 #![crate_name="vgrs"]
 #![crate_type="lib"]
 #![feature(asm)]
+#![deny(warnings)]
+#![allow(unstable)]
 
 extern crate libc;
 
@@ -268,6 +270,7 @@ pub mod memcheck {
 
     /// Result of `count_leaks` or `count_leak_blocks`, in
     /// bytes or blocks respectively.
+    #[derive(Copy)]
     pub struct LeakCount {
         pub leaked: usize,
         pub dubious: usize,
