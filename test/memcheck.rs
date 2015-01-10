@@ -15,13 +15,13 @@ use std::intrinsics;
 use libc::c_void;
 use test::black_box;
 
-unsafe fn assert_error(errors: &mut uint) {
+unsafe fn assert_error(errors: &mut usize) {
     let e = valgrind::count_errors();
     assert!(e > *errors);
     *errors = e;
 }
 
-unsafe fn assert_no_error(errors: uint) {
+unsafe fn assert_no_error(errors: usize) {
     let e = valgrind::count_errors();
     assert_eq!(e, errors);
 }

@@ -10,7 +10,7 @@ pub unsafe fn request(
         arg2: uint,
         arg3: uint,
         arg4: uint,
-        arg5: uint) -> uint {
+        arg5: uint) -> usize {
 
     let args: [uint; 6] = [request, arg1, arg2, arg3, arg4, arg5];
     let mut result: uint;

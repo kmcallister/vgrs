@@ -4,16 +4,16 @@
 
 #[inline(always)]
 pub unsafe fn request(
-        default: uint,
-        request: uint,
-        arg1: uint,
-        arg2: uint,
-        arg3: uint,
-        arg4: uint,
-        arg5: uint) -> uint {
+        default: usize,
+        request: usize,
+        arg1: usize,
+        arg2: usize,
+        arg3: usize,
+        arg4: usize,
+        arg5: usize) -> usize {
 
-    let args: [uint; 6] = [request, arg1, arg2, arg3, arg4, arg5];
-    let mut result: uint;
+    let args: [usize; 6] = [request, arg1, arg2, arg3, arg4, arg5];
+    let mut result: usize;
 
     // Valgrind notices this magic instruction sequence and interprets
     // it as a kind of hypercall.  When not running under Valgrind,
