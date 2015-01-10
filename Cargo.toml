@@ -1,5 +1,10 @@
 [package]
 
 name = "vgrs"
-version = "0.0.1"
+version = "0.1.0"
+description = "Valgrind client requests"
+repository = "https://github.com/kmcallister/vgrs"
+readme = "README.md"
+license = "MPL-2.0-no-copyleft-exception"
+
 authors = ["Keegan McAllister <kmcallister@mozilla.com>"]
