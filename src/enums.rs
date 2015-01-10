@@ -11,8 +11,8 @@ pub use self::Vg_TCheckClientRequest::*;
 pub use self::Vg_DRDClientRequest::*;
 
 macro_rules! VG_USERREQ_TOOL_BASE ( ($a:expr, $b:expr) => (
-    ((($a as int) & 0xff) << 24)
-  | ((($b as int) & 0xff) << 16)));
+    ((($a as isize) & 0xff) << 24)
+  | ((($b as isize) & 0xff) << 16)));
 
 #[repr(C)]
 pub enum Vg_ClientRequest {
