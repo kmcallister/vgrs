@@ -31,8 +31,8 @@
 #![crate_name="vgrs"]
 #![crate_type="lib"]
 #![feature(asm)]
+#![feature(libc)]
 #![deny(warnings)]
-#![allow(unstable)]
 
 extern crate libc;
 

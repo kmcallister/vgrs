@@ -5,7 +5,6 @@
 #![crate_name="vgrs-valgrind-test"]
 #![crate_type="bin"]
 #![deny(warnings)]
-#![allow(unstable)]
 
 extern crate vgrs;
 
