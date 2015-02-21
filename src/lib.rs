@@ -32,6 +32,7 @@
 #![crate_type="lib"]
 #![feature(asm)]
 #![feature(libc)]
+#![feature(std_misc)]
 #![deny(warnings)]
 
 extern crate libc;
@@ -155,8 +156,8 @@ macro_rules! wrap (
 macro_rules! wrap_str ( ($nr:ident => fn $name:ident ( $a1:ident : &str ) -> ()) => (
     #[inline(always)]
     pub unsafe fn $name($a1: &str) {
-        let c_str = CString::from_slice($a1.as_bytes());
-        arch::request(0, enums::$nr as usize, c_str.as_slice_with_nul().as_ptr() as usize, 0, 0, 0, 0);
+        let c_str = CString::new($a1.as_bytes()).unwrap();
+        arch::request(0, enums::$nr as usize, c_str.as_bytes_with_nul().as_ptr() as usize, 0, 0, 0, 0);
     }
 ));
 
