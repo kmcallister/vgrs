@@ -32,7 +32,6 @@
 #![crate_type="lib"]
 #![feature(asm)]
 #![feature(libc)]
-#![feature(std_misc)]
 #![deny(warnings)]
 
 extern crate libc;
