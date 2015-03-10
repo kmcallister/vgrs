@@ -2,7 +2,7 @@ BUILDDIR = build
 
 CARGO ?= cargo
 RUSTC ?= rustc
-RUST_DIRS := -L $(BUILDDIR) -L target -L target/deps
+RUST_DIRS := -L $(BUILDDIR) -L target/debug -L target/debug/deps
 
 VALGRIND ?= valgrind
 
