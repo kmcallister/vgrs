@@ -25,7 +25,7 @@ $(LIB): $(LIB_ALL_SRC) | $(BUILDDIR)
 TEST_TOOLS = valgrind memcheck
 
 define DEF_TEST
-$(BUILDDIR)/vgrs-$(1)-test: test/$(1).rs $$(LIB)
+$(BUILDDIR)/vgrs_$(1)_test: test/$(1).rs $$(LIB)
 	$$(RUSTC_CMD) $$<
 endef
 
@@ -33,9 +33,9 @@ $(foreach tool,$(TEST_TOOLS),\
 $(eval $(call DEF_TEST,$(tool))))
 
 .PHONY: check
-check: $(foreach tool,$(TEST_TOOLS),$(BUILDDIR)/vgrs-$(tool)-test)
-	$(VALGRIND_CMD) --tool=none $(BUILDDIR)/vgrs-valgrind-test
-	$(VALGRIND_CMD) --tool=memcheck $(BUILDDIR)/vgrs-memcheck-test
+check: $(foreach tool,$(TEST_TOOLS),$(BUILDDIR)/vgrs_$(tool)_test)
+	$(VALGRIND_CMD) --tool=none $(BUILDDIR)/vgrs_valgrind_test
+	$(VALGRIND_CMD) --tool=memcheck $(BUILDDIR)/vgrs_memcheck_test
 
 .PHONY: clean
 clean:
