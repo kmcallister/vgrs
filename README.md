@@ -31,4 +31,4 @@ This library builds with [Cargo](http://crates.io/).  You can run the tests with
 
 [Valgrind]: http://valgrind.org
 [Valgrind user manual]: http://valgrind.org/docs/manual/index.html
-[API documentation online]: http://www.rust-ci.org/kmcallister/vgrs/doc/vgrs/
+[API documentation online]: https://kmcallister.github.io/docs/vgrs/vgrs/index.html
