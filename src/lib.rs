@@ -270,7 +270,7 @@ pub mod memcheck {
 
     /// Result of `count_leaks` or `count_leak_blocks`, in
     /// bytes or blocks respectively.
-    #[derive(Copy)]
+    #[derive(Copy, Clone)]
     pub struct LeakCount {
         pub leaked: usize,
         pub dubious: usize,
