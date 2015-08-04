@@ -4,7 +4,6 @@
 
 #![crate_name="vgrs_memcheck_test"]
 #![crate_type="bin"]
-#![feature(core)]
 #![feature(libc)]
 #![feature(test)]
 #![deny(warnings)]
@@ -15,7 +14,7 @@ extern crate libc;
 
 use vgrs::{valgrind, memcheck};
 
-use std::intrinsics;
+use std::mem;
 use libc::c_void;
 use test::black_box;
 
@@ -36,7 +35,7 @@ unsafe fn do_test() {
     let mut errors = 0;
     assert_no_error(errors);
 
-    let x: u8 = intrinsics::uninit();
+    let x: u8 = mem::uninitialized();
     assert!(memcheck::check_is_addressable(&x).is_none());
     assert!(memcheck::check_is_defined(&x).is_some());
     black_box(x);
@@ -68,7 +67,7 @@ unsafe fn do_test() {
     black_box(x);
     assert_no_error(errors);
 
-    let x: u8 = intrinsics::uninit();
+    let x: u8 = mem::uninitialized();
     memcheck::make_defined(&x);
     assert!(memcheck::check_is_addressable(&x).is_none());
     assert!(memcheck::check_is_defined(&x).is_none());
